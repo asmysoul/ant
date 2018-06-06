@@ -13,7 +13,7 @@ public class NameUtils {
         String name = clazz.getSimpleName();
         Integer index = nameMap.getOrDefault(name, 1);
         nameMap.put(name, index + 1);
-        return bulidName(name,index);
+        return buildName(name,index);
     }
 
     public synchronized static String id(Class clazz){
@@ -21,7 +21,7 @@ public class NameUtils {
         return idMap.getOrDefault(name, UUID.randomUUID().toString());
     }
 
-    private static String bulidName(String name, Integer index) {
+    private static String buildName(String name, Integer index) {
         return name + "-" + index;
     }
 
