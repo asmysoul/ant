@@ -9,9 +9,18 @@ public class TaskErrorResponse{
 
     private TaskResponse response;
 
+    private Exception e;
+
+    public TaskErrorResponse() {
+    }
 
     public TaskErrorResponse(TaskResponse response) throws IOException {
         this.response = response;
+    }
+
+    public TaskErrorResponse(TaskResponse response, Exception e) {
+        this.response = response;
+        this.e = e;
     }
 
     public String getGroup(){
@@ -40,5 +49,9 @@ public class TaskErrorResponse{
         return this.response.getQueue();
     }
 
+
+    public Exception getE() {
+        return e;
+    }
 
 }

@@ -81,6 +81,24 @@ public class TaskWorker implements Runnable {
         httpKit = new HttpClientKit();
     }
 
+    public TaskWorker(AntQueue queue, Integer threadNum, IHandler handler) {
+        this.queue = queue;
+        this.threadNum = threadNum;
+        threadPool = new CountableThreadPool(threadNum);
+        this.pipeline = new ConsolePipeline();
+        this.handler = handler;
+        httpKit = new HttpClientKit();
+    }
+
+    public TaskWorker(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler) {
+        this.queue = queue;
+        this.threadNum = threadNum;
+        threadPool = new CountableThreadPool(threadNum);
+        this.pipeline = pipeline;
+        this.handler = handler;
+        httpKit = new HttpClientKit();
+    }
+
     public TaskWorker(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler, IHttpKit httpKit, boolean autoClose, Long sleep) {
         this.queue = queue;
         this.threadNum = threadNum;
@@ -113,12 +131,8 @@ public class TaskWorker implements Runnable {
         this.pipeline.stream(task.getTaskResponse());
     }
 
-    private void onFailed(Task task) {
-        try {
-            this.handler.handle(new TaskErrorResponse(task.getTaskResponse()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void onFailed(Task task, Exception exception) {
+        this.handler.handle(new TaskErrorResponse(task.getTaskResponse(), exception));
     }
 
 
@@ -141,7 +155,7 @@ public class TaskWorker implements Runnable {
             if (finalTask == null) {
                 if(threadPool.getThreadAlive() == 0){
                     logger.info("★★★★★★★★★★★★★★★★★★★线程池中没有执行的任务★★★★★★★★★★★★★★★★★★★");
-                    logger.info("★★★★★★★★★★★★★★★★★★★我要下车了★★★★★★★★★★★★★★★★★★★");
+                    logger.info("★★★★★★★★★★★★★★★★★★★我要下车了---^_^告辞★★★★★★★★★★★★★★★★★★★");
                     break;
                 }
                 waitNewUrl();
@@ -151,8 +165,12 @@ public class TaskWorker implements Runnable {
                         process(finalTask);
                         onSuccess(finalTask);
                     } catch (Exception e) {
-                        onFailed(finalTask);
-                        e.printStackTrace();
+                        TaskResponse taskResponse = new TaskResponse();
+                        taskResponse.setQueue(queue);
+                        taskResponse.setTask(finalTask);
+                        finalTask.setTaskResponse(taskResponse);
+                        onFailed(finalTask, e);
+//                        e.printStackTrace();
                     }finally {
                         signalNewUrl();
                     }
