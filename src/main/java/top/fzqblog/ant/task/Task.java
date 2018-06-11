@@ -14,11 +14,14 @@ public class Task implements Comparable<Task> {
     //每一个任务都会有一个分组，如果没有设置，默认为 default
     private String group = Constants.APP_TASK_GROUP_DEFAULT;
     private String url;
+    private Map<String, Object> headers = new HashMap<>();
     private Map<String, Object> params = new HashMap<String, Object>();;
+    private TaskResponse taskResponse;
     private List<String> selects;
     private Object extr;
     private Integer retry = Constants.DEFAULT_TASK_RETRY;
     private Integer deep = Constants.DEFAULT_TASK_DEEP;
+    private String userAgent;
 
     public Task(String url, String group, Object extr) {
         this.url = url;
@@ -43,6 +46,12 @@ public class Task implements Comparable<Task> {
     public Task(String url, String group, Map<String, Object> params) {
         this.group = group;
         this.url = url;
+        this.params = params;
+    }
+
+    public Task(String url, Map<String, Object> headers, Map<String, Object> params) {
+        this.url = url;
+        this.headers = headers;
         this.params = params;
     }
 
@@ -73,6 +82,14 @@ public class Task implements Comparable<Task> {
         this.url = url;
     }
 
+    public Map<String, Object> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, Object> headers) {
+        this.headers = headers;
+    }
+
     public Map<String, Object> getParams() {
         return params;
     }
@@ -99,17 +116,35 @@ public class Task implements Comparable<Task> {
         this.extr = extr;
     }
 
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public TaskResponse getTaskResponse() {
+        return taskResponse;
+    }
+
+    public void setTaskResponse(TaskResponse taskResponse) {
+        this.taskResponse = taskResponse;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
                 "id='" + id + '\'' +
                 ", group='" + group + '\'' +
                 ", url='" + url + '\'' +
+                ", headers=" + headers +
                 ", params=" + params +
                 ", selects=" + selects +
                 ", extr=" + extr +
                 ", retry=" + retry +
                 ", deep=" + deep +
+                ", userAgent='" + userAgent + '\'' +
                 '}';
     }
 
@@ -189,5 +224,7 @@ public class Task implements Comparable<Task> {
     public void setDeep(Integer deep) {
         this.deep = deep;
     }
+
+
 
 }
