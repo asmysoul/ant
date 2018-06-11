@@ -4,7 +4,7 @@ import org.junit.Test;
 import top.fzqblog.ant.queue.AntQueue;
 import top.fzqblog.ant.queue.TaskQueue;
 import top.fzqblog.ant.task.Task;
-import top.fzqblog.ant.worker.TaskWorker;
+import top.fzqblog.ant.worker.Ant;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +27,8 @@ public class CoolApkTest {
         AntQueue antQueue = TaskQueue.of();
         try {
             antQueue.push(task);
-            TaskWorker taskWorker = new TaskWorker(antQueue);
-            taskWorker.run();
+            Ant ant = new Ant(antQueue);
+            ant.run();
         } catch (Exception e) {
             e.printStackTrace();
         }

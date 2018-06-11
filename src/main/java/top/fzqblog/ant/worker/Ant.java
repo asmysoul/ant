@@ -2,6 +2,7 @@ package top.fzqblog.ant.worker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.fzqblog.ant.exception.AntException;
 import top.fzqblog.ant.handler.DefaultHandler;
 import top.fzqblog.ant.handler.IHandler;
 import top.fzqblog.ant.http.HttpClientKit;
@@ -21,11 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class TaskWorker implements Runnable {
+public class Ant implements Runnable {
 
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ExecutorService executorService;
 
     private CountableThreadPool threadPool;
 
@@ -33,6 +33,12 @@ public class TaskWorker implements Runnable {
 
     private Condition newUrlCondition = newUrlLock.newCondition();
 
+
+
+
+
+
+    private ExecutorService executorService;
 
     private AntQueue queue;
 
@@ -48,58 +54,44 @@ public class TaskWorker implements Runnable {
 
     private Long sleep = Constants.DEFAULT_SLEEP_TIME;
 
-    public TaskWorker() {
-        threadPool = new CountableThreadPool(threadNum);
-        pipeline = new ConsolePipeline();
-        handler = new DefaultHandler();
-        httpKit = new HttpClientKit();
+    public Ant() {
+        init();
     }
 
-    public TaskWorker(AntQueue queue) {
+    public Ant(AntQueue queue) {
         this.queue = queue;
-        threadPool = new CountableThreadPool(threadNum);
-        pipeline = new ConsolePipeline();
-        handler = new DefaultHandler();
-        httpKit = new HttpClientKit();
+        init();
     }
 
-    public TaskWorker(AntQueue queue, Integer threadNum) {
+    public Ant(AntQueue queue, Integer threadNum) {
         this.queue = queue;
         this.threadNum = threadNum;
-        threadPool = new CountableThreadPool(threadNum);
-        pipeline = new ConsolePipeline();
-        handler = new DefaultHandler();
-        httpKit = new HttpClientKit();
+        init();
     }
 
-    public TaskWorker(AntQueue queue, Integer threadNum, IPipeline pipeline) {
+    public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline) {
         this.queue = queue;
         this.threadNum = threadNum;
-        threadPool = new CountableThreadPool(threadNum);
         this.pipeline = pipeline;
-        handler = new DefaultHandler();
-        httpKit = new HttpClientKit();
+        init();
     }
 
-    public TaskWorker(AntQueue queue, Integer threadNum, IHandler handler) {
+    public Ant(AntQueue queue, Integer threadNum, IHandler handler) {
         this.queue = queue;
         this.threadNum = threadNum;
-        threadPool = new CountableThreadPool(threadNum);
-        this.pipeline = new ConsolePipeline();
         this.handler = handler;
-        httpKit = new HttpClientKit();
+        init();
     }
 
-    public TaskWorker(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler) {
+    public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler) {
         this.queue = queue;
         this.threadNum = threadNum;
-        threadPool = new CountableThreadPool(threadNum);
         this.pipeline = pipeline;
         this.handler = handler;
-        httpKit = new HttpClientKit();
+        init();
     }
 
-    public TaskWorker(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler, IHttpKit httpKit, boolean autoClose, Long sleep) {
+    public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler, IHttpKit httpKit, boolean autoClose, Long sleep) {
         this.queue = queue;
         this.threadNum = threadNum;
         threadPool = new CountableThreadPool(threadNum);
@@ -108,6 +100,42 @@ public class TaskWorker implements Runnable {
         this.httpKit = httpKit;
         this.autoClose = autoClose;
         this.sleep = sleep;
+    }
+
+    public static Ant create(){
+        return new Ant();
+    }
+
+    public Ant startQueue(AntQueue antQueue){
+        this.queue = antQueue;
+        return this;
+    }
+
+    public Ant thread(int threadNum) throws AntException{
+        if(threadNum <= 0){
+            throw new AntException("线程数小于等于0，这也太秀了吧");
+        }
+        this.threadNum = threadNum;
+        return this;
+    }
+
+
+
+    private void init(){
+        if(pipeline == null){
+            pipeline = new ConsolePipeline();
+        }
+        if(handler == null){
+            handler = new DefaultHandler();
+        }
+
+        if(httpKit == null){
+            httpKit = new HttpClientKit();
+        }
+
+        if(threadPool == null){
+            threadPool = new CountableThreadPool(this.threadNum);
+        }
     }
 
 
@@ -138,7 +166,7 @@ public class TaskWorker implements Runnable {
 
     @Override
     public void run() {
-
+        init();
         while (!Thread.currentThread().isInterrupted()) {
             Task task = null;
             try {
