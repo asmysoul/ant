@@ -95,5 +95,10 @@ public class HttpClientKit implements IHttpKit{
         return new TaskResponse(task, content);
     }
 
+    @Override
+    public void setPoolSize(int size) {
+        httpClientGenerator.setPoolSize(size);
+    }
+
 
 }

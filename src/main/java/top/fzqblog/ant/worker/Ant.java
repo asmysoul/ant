@@ -143,6 +143,7 @@ public class Ant implements Runnable {
 
         if(threadPool == null){
             threadPool = new CountableThreadPool(this.threadNum);
+            httpKit.setPoolSize(this.threadNum);
         }
         startTime = new Date();
         logger.info("------------------------------ant启动------------------------------于"+ DateUtils.format(startTime, DateUtils.FORMAT_FULL_CN));

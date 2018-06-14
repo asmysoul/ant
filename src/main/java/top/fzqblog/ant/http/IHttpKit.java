@@ -14,4 +14,7 @@ public interface IHttpKit {
 
     TaskResponse doPost(Task task) throws Exception;
 
+
+    void setPoolSize(int size);
+
 }

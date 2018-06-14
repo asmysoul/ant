@@ -39,7 +39,6 @@ public class HttpClientGenerator {
                 .build();
         connectionManager = new PoolingHttpClientConnectionManager(reg);
         connectionManager.setDefaultMaxPerRoute(Constants.DEFAULT_MAX_PER_ROUTE);
-        connectionManager.setMaxTotal(Constants.DEFAULT_MAX_PER_ROUTE);
 
         reqConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout(Constants.DEFAULT_REQUEST_TIMEOUT)
