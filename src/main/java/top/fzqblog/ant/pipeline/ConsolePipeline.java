@@ -2,6 +2,7 @@ package top.fzqblog.ant.pipeline;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.fzqblog.ant.task.Task;
 import top.fzqblog.ant.task.TaskResponse;
 
 import java.util.concurrent.TimeUnit;

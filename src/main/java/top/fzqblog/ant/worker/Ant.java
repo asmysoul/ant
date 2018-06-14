@@ -7,6 +7,7 @@ import top.fzqblog.ant.handler.DefaultHandler;
 import top.fzqblog.ant.handler.IHandler;
 import top.fzqblog.ant.http.HttpClientKit;
 import top.fzqblog.ant.http.IHttpKit;
+import top.fzqblog.ant.listener.AntListener;
 import top.fzqblog.ant.pipeline.ConsolePipeline;
 import top.fzqblog.ant.pipeline.IPipeline;
 import top.fzqblog.ant.queue.AntQueue;
@@ -15,8 +16,9 @@ import top.fzqblog.ant.task.TaskErrorResponse;
 import top.fzqblog.ant.task.TaskResponse;
 import top.fzqblog.ant.thread.CountableThreadPool;
 import top.fzqblog.ant.utils.Constants;
+import top.fzqblog.ant.utils.DateUtils;
 
-import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -33,7 +35,9 @@ public class Ant implements Runnable {
 
     private Condition newUrlCondition = newUrlLock.newCondition();
 
+    private Date startTime;
 
+    private AntListener antListener;
 
 
 
@@ -54,8 +58,8 @@ public class Ant implements Runnable {
 
     private Long sleep = Constants.DEFAULT_SLEEP_TIME;
 
-    public Ant() {
-        init();
+    private Ant() {
+
     }
 
     public Ant(AntQueue queue) {
@@ -119,6 +123,10 @@ public class Ant implements Runnable {
         return this;
     }
 
+    public Ant pipeline(IPipeline pipeline){
+        this.pipeline = pipeline;
+        return this;
+    }
 
 
     private void init(){
@@ -136,6 +144,12 @@ public class Ant implements Runnable {
         if(threadPool == null){
             threadPool = new CountableThreadPool(this.threadNum);
         }
+        startTime = new Date();
+        logger.info("------------------------------ant启动------------------------------于"+ DateUtils.format(startTime, DateUtils.FORMAT_FULL_CN));
+    }
+
+    public Date getStartTime(){
+        return startTime;
     }
 
 
@@ -147,6 +161,9 @@ public class Ant implements Runnable {
         }
     }
 
+    public void setAntListener(AntListener antListener) {
+        this.antListener = antListener;
+    }
 
     private void process(Task task) throws Exception {
         TaskResponse taskResponse = httpKit.doGet(task);
@@ -157,10 +174,17 @@ public class Ant implements Runnable {
 
     private void onSuccess(Task task) throws Exception {
         this.pipeline.stream(task.getTaskResponse());
+        if(this.antListener != null){
+            this.antListener.onSuccess();
+        }
     }
 
     private void onFailed(Task task, Exception exception) {
         this.handler.handle(new TaskErrorResponse(task.getTaskResponse(), exception));
+    }
+
+    public int getThreadAlive(){
+        return threadPool.getThreadAlive();
     }
 
 
@@ -184,6 +208,9 @@ public class Ant implements Runnable {
                 if(threadPool.getThreadAlive() == 0){
                     logger.info("★★★★★★★★★★★★★★★★★★★线程池中没有执行的任务★★★★★★★★★★★★★★★★★★★");
                     logger.info("★★★★★★★★★★★★★★★★★★★我要下车了---^_^告辞★★★★★★★★★★★★★★★★★★★");
+                    Date endTime = new Date();
+                    logger.info("------------------------------ant执行结束------------------------------于"+DateUtils.format(endTime, DateUtils.FORMAT_FULL_CN));
+                    logger.info("------------------------------总共耗时------------------------------"+ DateUtils.getDatePoor(startTime, endTime));
                     break;
                 }
                 waitNewUrl();
@@ -198,6 +225,7 @@ public class Ant implements Runnable {
                         taskResponse.setTask(finalTask);
                         finalTask.setTaskResponse(taskResponse);
                         onFailed(finalTask, e);
+
 //                        e.printStackTrace();
                     }finally {
                         signalNewUrl();

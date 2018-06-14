@@ -18,7 +18,7 @@ public class DefaultHandler implements IHandler {
         try {
             Task task = taskErrorResponse.getTask();
             if(task.getRetry() <= 0){
-                logger.error("重试次数已用完--------", task);
+                logger.error("重试次数已用完--------"+task);
             }else{
                 taskErrorResponse.getQueue().failed(taskErrorResponse.getTask());
             }

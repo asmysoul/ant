@@ -87,7 +87,6 @@ public class TaskResponse {
         return "TaskResponse{" +
                 "failed=" + failed +
                 ", task=" + task +
-                ", content='" + content + '\'' +
                 ", failMsg='" + failMsg + '\'' +
                 '}';
     }
