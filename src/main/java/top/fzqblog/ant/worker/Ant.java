@@ -70,21 +70,18 @@ public class Ant implements Runnable {
     public Ant(AntQueue queue, Integer threadNum) {
         this.queue = queue;
         this.threadNum = threadNum;
-        init();
     }
 
     public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline) {
         this.queue = queue;
         this.threadNum = threadNum;
         this.pipeline = pipeline;
-        init();
     }
 
     public Ant(AntQueue queue, Integer threadNum, IHandler handler) {
         this.queue = queue;
         this.threadNum = threadNum;
         this.handler = handler;
-        init();
     }
 
     public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler) {
@@ -92,7 +89,6 @@ public class Ant implements Runnable {
         this.threadNum = threadNum;
         this.pipeline = pipeline;
         this.handler = handler;
-        init();
     }
 
     public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler, IHttpKit httpKit, boolean autoClose, Long sleep) {
