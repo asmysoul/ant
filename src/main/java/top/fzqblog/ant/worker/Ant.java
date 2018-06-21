@@ -232,6 +232,14 @@ public class Ant implements Runnable {
             }
         }
 
+        if(autoClose){
+            destroy();
+        }
+
+    }
+
+    private void destroy(){
+        threadPool.shutdown();
     }
 
     private void waitNewUrl() {
