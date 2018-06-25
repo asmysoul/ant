@@ -5,16 +5,20 @@
 
 ### 简介
 
-    Ant, 之所以选择这么一个名字第一是因为够短, 第二是最近工作大部分在写前端, 用到Ant-Design, 因而选了这么一个名字。￣□￣｜｜
+    Ant, 之所以选择这么一个名字第一是因为够短, 
+    第二是最近工作大部分在写前端, 用到Ant-Design,
+    因而选了这么一个名字。￣□￣｜｜
 
-    写这么一个东西主要是兴趣, 还有就是工作中也会用到, 想要一个接入代理平台方便的小型框架, 看了一些爬虫框架的源码, 借鉴（抄袭￣□￣｜｜）其中的主要核心逻辑。
+    写这么一个东西主要是兴趣, 还有就是工作中也会用到, 
+    想要一个接入代理平台方便的小型框架, 
+    看了一些爬虫框架的源码, 借鉴（抄袭￣□￣｜｜）其中的主要核心逻辑。
 
 
 ### 使用方式
    ![example](http://image.fzqblog.top/ant-example.png)
 
     极其简单,几行代码即可实现一个简单的爬虫。
-    其中的网页节点内容抽取用的JSOUP, 主要是个人写前端, 觉得JSOUP相对简单,
+    其中的网页节点内容抽取用的JSOUP, 主要是个人写前端, 觉得JSOUP相对简单,
     http客户端使用的是HttpClient, 基于接口实现http抓取, 可自由替换, 
     日志的话采用logback。
 
@@ -47,7 +51,7 @@
 
 
 
-*   TaskQueue支持自定义初始化装载因子(num)
+*   TaskQueue支持自定义初始化装载因子 (num)
     ```java
     AntQueue antQueue = TaskQueue.of(num);
     ```
@@ -58,14 +62,16 @@
             .create()//创建一个ant,
             .startQueue(antQueue)//并将任务给它,
             .thread(1);// 使用单线程爬取
-            .httpKit(自定义的客户端)//实现IHttpKit 并覆盖doGet方法
+            .httpKit(自定义的客户端)//实现IHttpKit 并覆盖doGet方法
             .autoClose(false)//取消自动关闭 默认为自动关闭
             .sleep(1000)//抓取间隔 默认为0
     ```
 
 
-*   支持使用自定义的pipeline, 处理抓取到的数据, 进行数据格式化, 结构化, 持久化的接口
-总之就是拿到数据后自己爱咋咋地, 默认使用ConsolePipeline,默认输出任务抓取结果到控制台
+*   支持使用自定义的pipeline, 处理抓取到的数据, 
+    进行数据格式化, 结构化, 持久化的接口
+    总之就是拿到数据后自己爱咋咋地, 
+    默认使用ConsolePipeline,默认输出任务抓取结果到控制台
     ```java
     @Override
     public void stream(TaskResponse taskResponse) throws InterruptedException {
@@ -79,7 +85,7 @@
         private transient Logger logger = LoggerFactory.getLogger(getClass());
 
         @Override
-        public void stream(TaskResponse taskResponse) throws InterruptedException {//覆盖stream方法, 这里面即可自定义处理逻辑
+        public void stream(TaskResponse taskResponse) throws InterruptedException {//覆盖stream方法, 这里面即可自定义处理逻辑
             Document document = taskResponse.getDoc();
             logger.info("taskResponse----------=" + document.title());
         }
@@ -95,7 +101,10 @@
     ```
     
    
-*   自定义抓取错误处理Handler, 主要是各个网站返回的错误是不一样的, 所以开放处理方式进行错误处理, 进行重试或者放弃该任务, 默认task的重试次数为3次, 且默认的处理器为
+*   自定义抓取错误处理Handler, 
+    主要是各个网站返回的错误是不一样的, 
+    所以开放处理方式进行错误处理, 进行重试或者放弃该任务,
+    默认task的重试次数为3次, 且默认的处理器为
     ```java
     public class DefaultHandler implements IHandler {
 
@@ -119,7 +128,7 @@
     }
     ```
     
-*   修改默认任务的重试次数
+*   修改默认任务的重试次数
     ```java
     Task task = new Task(url).retry(num);//num为重试次数
     ```
@@ -132,7 +141,7 @@
             if(taskErrorResponse.getE() != null && taskErrorResponse.getE() instanceof Exception){//根据一些判断条件来检测任务并不是真的失败,可能由于网站的反扒机智,出现的, 此时可以自定义重试策略
                 try {
                     System.out.println("----------=" + taskErrorResponse.getTask());
-                    taskErrorResponse.getQueue().fakerFailed(taskErrorResponse.getTask());//fakerFailed假失败, 重置重试次数，并且重现放回任务队列
+                    taskErrorResponse.getQueue().fakerFailed(taskErrorResponse.getTask());//fakerFailed假失败, 重置重试次数，并且重现放回任务队列
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -178,7 +187,7 @@
     }
     ```
 
-*   监控(后续打算开放这一块, 自定义要监控的属性)
+*   监控(后续打算开放这一块, 自定义要监控的属性)
 
     ```java
     AntQueue antQueue = TaskQueue.of();
