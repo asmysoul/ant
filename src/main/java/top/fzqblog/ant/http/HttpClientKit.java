@@ -72,10 +72,11 @@ public class HttpClientKit implements IHttpKit{
         }
         CloseableHttpResponse response = null;
         response = httpClient.execute((HttpGet)httpGet);
+
         HttpEntity entity = response.getEntity();
         String content = EntityUtils.toString(entity, "utf-8");
         response.close();
-        return new TaskResponse(task, content);
+        return new TaskResponse(task, entity.getContent(), content);
     }
 
     @Override

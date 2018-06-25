@@ -6,11 +6,15 @@ import top.fzqblog.ant.queue.AntQueue;
 import top.fzqblog.ant.queue.TaskQueue;
 import top.fzqblog.ant.utils.StringUtil;
 
+import java.io.InputStream;
+
 public class TaskResponse {
 
     private boolean failed = false;
 
     private Task task;
+
+    private InputStream inputStream;
 
     private String content;
 
@@ -35,12 +39,26 @@ public class TaskResponse {
         this.content = content;
     }
 
+    public TaskResponse(Task task, InputStream inputStream, String content) {
+        this.task = task;
+        this.inputStream = inputStream;
+        this.content = content;
+    }
+
     public boolean isFailed() {
         return failed;
     }
 
     public void setFailed(boolean failed) {
         this.failed = failed;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 
     public String getContent() {
