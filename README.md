@@ -3,14 +3,14 @@
 
 ![](https://api.travis-ci.org/asmysoul/ant.svg?branch=master) ![](https://img.shields.io/badge/language-java-green.svg) ![](https://img.shields.io/badge/jdk-1.8-green.svg)
 
-###简介
+### 简介
 
     Ant, 之所以选择这么一个名字第一是因为够短, 第二是最近工作大部分在写前端, 用到Ant-Design, 因而选了这么一个名字。￣□￣｜｜
 
     写这么一个东西主要是兴趣, 还有就是工作中也会用到, 想要一个接入代理平台方便的小型框架, 看了一些爬虫框架的源码, 借鉴（抄袭￣□￣｜｜）其中的主要核心逻辑。
 
 
-###使用方式
+### 使用方式
    ![example](http://image.fzqblog.top/ant-example.png)
 
     极其简单,几行代码即可实现一个简单的爬虫。
@@ -72,7 +72,7 @@
         logger.info("TaskResponse------------------------" + taskResponse);
     }
     ```
-    使用自定义的pipeline
+*   使用自定义的pipeline
     ```java
     public class SubPipeline implements IPipeline {//实现IPipeline接口
 
@@ -85,7 +85,7 @@
         }
     }
     ```
-    创建爬虫Ant的地方使用该pipeline
+*   创建爬虫Ant的地方使用该pipeline
     ```java
     Ant ant = Ant
                 .create()
@@ -118,12 +118,12 @@
         }
     }
     ```
-
-    修改默认任务的重试次数
+    
+*   修改默认任务的重试次数
     ```java
     Task task = new Task(url).retry(num);//num为重试次数
     ```
-    自定义错误任务处理器
+*   自定义错误任务处理器
     ```java
     public class ErrorHandler implements IHandler {//实现IHandler接口
 
@@ -140,7 +140,7 @@
         }
     }
     ```
-    创建爬虫Ant的地方使用该Handler
+*   创建爬虫Ant的地方使用该Handler
     ```java
     Ant ant = Ant
             .create()

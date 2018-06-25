@@ -27,7 +27,7 @@ public class CoolApkTest {
         AntQueue antQueue = TaskQueue.of();
         try {
             antQueue.push(task);
-            Ant ant = new Ant(antQueue);
+            Ant ant = Ant.create().startQueue(antQueue);
             ant.run();
         } catch (Exception e) {
             e.printStackTrace();
