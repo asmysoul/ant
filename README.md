@@ -74,7 +74,8 @@
     默认使用ConsolePipeline,默认输出任务抓取结果到控制台
     ```java
     @Override
-    public void stream(TaskResponse taskResponse) throws InterruptedException {
+    public void stream(TaskResponse taskResponse) 
+        throws InterruptedException {
         logger.info("TaskResponse------------------------" + taskResponse);
     }
     ```
@@ -85,13 +86,14 @@
         private transient Logger logger = LoggerFactory.getLogger(getClass());
 
         @Override
-        public void stream(TaskResponse taskResponse) throws InterruptedException {//覆盖stream方法, 这里面即可自定义处理逻辑
+        public void stream(TaskResponse taskResponse) 
+            throws InterruptedException {//覆盖stream方法, 这里面即可自定义处理逻辑
             Document document = taskResponse.getDoc();
             logger.info("taskResponse----------=" + document.title());
         }
     }
     ```
-*   创建爬虫Ant的地方使用该pipeline
+*   创建爬虫Ant的地方使用该pipeline
     ```java
     Ant ant = Ant
                 .create()
@@ -118,7 +120,9 @@
                 if(task.getRetry() <= 0){
                     logger.error("重试次数已用完--------"+task);
                 }else{
-                    taskErrorResponse.getQueue().failed(taskErrorResponse.getTask());//默认每次重试次数减1,重新加入任务队列
+                    taskErrorResponse
+                    .getQueue()
+                    .failed(taskErrorResponse.getTask());//默认每次重试次数减1,重新加入任务队列
                 }
             }catch (Exception e){
                 logger.error("DefaultHandler-----handle-----error", e);
@@ -138,10 +142,15 @@
 
         @Override
         public void handle(TaskErrorResponse taskErrorResponse) {
-            if(taskErrorResponse.getE() != null && taskErrorResponse.getE() instanceof Exception){//根据一些判断条件来检测任务并不是真的失败,可能由于网站的反扒机智,出现的, 此时可以自定义重试策略
+            if(taskErrorResponse.getE() != null
+            && taskErrorResponse.getE() instanceof Exception){
+            //根据一些判断条件来检测任务并不是真的失败,可能由于网站的反扒机智,出现的, 此时可以自定义重试策略
                 try {
                     System.out.println("----------=" + taskErrorResponse.getTask());
-                    taskErrorResponse.getQueue().fakerFailed(taskErrorResponse.getTask());//fakerFailed假失败, 重置重试次数，并且重现放回任务队列
+                    taskErrorResponse
+                        .getQueue()
+                        .fakerFailed(taskErrorResponse.getTask());
+                        //fakerFailed假失败, 重置重试次数，并且重现放回任务队列
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -198,6 +207,8 @@
             .pipeline(new SubPipeline())
             .withHandler(new ErrorHandler())
             .thread(1);
-    AntMonitor.getInstance().regist(ant);//注册jmx监控 使用jconsole即可观察 爬虫的运行线程个数, 成功个数, 爬虫的开始时间
+    AntMonitor
+    .getInstance()
+    .regist(ant);//注册jmx监控 使用jconsole即可观察 爬虫的运行线程个数, 成功个数, 爬虫的开始时间
     ant.run();
     ```
