@@ -41,10 +41,9 @@ public class LockTest {
         String num = "1";
         queue.add(num);
         System.out.println("往队列添加了一个数字----"+num );
-        while (true){
-            TimeUnit.SECONDS.sleep(5);
-            System.out.println("----------=doSomething" );
-        }
+        TimeUnit.SECONDS.sleep(10);
+        System.out.println("----------=doSomething" );
+
     }
 
     public void waitForNum(){

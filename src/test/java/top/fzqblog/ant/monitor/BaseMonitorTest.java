@@ -36,8 +36,5 @@ public class BaseMonitorTest {
 
         // 将new Hello()这个对象注册到MBeanServer上去
         mBeanServer.registerMBean(new Hello(),helloName);
-        while (true){
-
-        }
     }
 }
