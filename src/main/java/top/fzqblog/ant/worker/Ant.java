@@ -62,46 +62,6 @@ public class Ant implements Runnable {
 
     }
 
-    public Ant(AntQueue queue) {
-        this.queue = queue;
-        init();
-    }
-
-    public Ant(AntQueue queue, Integer threadNum) {
-        this.queue = queue;
-        this.threadNum = threadNum;
-    }
-
-    public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline) {
-        this.queue = queue;
-        this.threadNum = threadNum;
-        this.pipeline = pipeline;
-    }
-
-    public Ant(AntQueue queue, Integer threadNum, IHandler handler) {
-        this.queue = queue;
-        this.threadNum = threadNum;
-        this.handler = handler;
-    }
-
-    public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler) {
-        this.queue = queue;
-        this.threadNum = threadNum;
-        this.pipeline = pipeline;
-        this.handler = handler;
-    }
-
-    public Ant(AntQueue queue, Integer threadNum, IPipeline pipeline, IHandler handler, IHttpKit httpKit, boolean autoClose, Long sleep) {
-        this.queue = queue;
-        this.threadNum = threadNum;
-        threadPool = new CountableThreadPool(threadNum);
-        this.pipeline = pipeline;
-        this.handler = handler;
-        this.httpKit = httpKit;
-        this.autoClose = autoClose;
-        this.sleep = sleep;
-    }
-
     public static Ant create(){
         return new Ant();
     }
@@ -124,6 +84,25 @@ public class Ant implements Runnable {
         return this;
     }
 
+    public Ant withHandler(IHandler handler){
+        this.handler = handler;
+        return this;
+    }
+
+    public Ant httpKit(IHttpKit httpKit){
+        this.httpKit = httpKit;
+        return this;
+    }
+
+    public Ant autoClose(boolean autoClose){
+        this.autoClose = autoClose;
+        return this;
+    }
+
+    public Ant sleep(Long sleep){
+        this.sleep = sleep;
+        return this;
+    }
 
     private void init(){
         if(pipeline == null){
