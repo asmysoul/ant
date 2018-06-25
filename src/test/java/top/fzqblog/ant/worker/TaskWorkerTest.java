@@ -1,7 +1,9 @@
 package top.fzqblog.ant.worker;
 
 import org.junit.Test;
+import top.fzqblog.ant.handler.ErrorHandler;
 import top.fzqblog.ant.monitor.AntMonitor;
+import top.fzqblog.ant.pipeline.SubPipeline;
 import top.fzqblog.ant.queue.AntQueue;
 import top.fzqblog.ant.queue.TaskQueue;
 import top.fzqblog.ant.task.Task;
@@ -16,7 +18,12 @@ public class TaskWorkerTest {
         try {
             AntQueue antQueue = TaskQueue.of();
             antQueue.push(new Task("https://github.com/"));
-            Ant ant = Ant.create().startQueue(antQueue).thread(1);
+            Ant ant = Ant
+                    .create()
+                    .startQueue(antQueue)
+                    .pipeline(new SubPipeline())
+                    .withHandler(new ErrorHandler())
+                    .thread(1);
             AntMonitor.getInstance().regist(ant);
             ant.run();
         } catch (Exception e) {
