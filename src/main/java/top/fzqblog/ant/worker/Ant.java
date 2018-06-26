@@ -196,6 +196,7 @@ public class Ant implements Runnable {
                         process(finalTask);
                         onSuccess(finalTask);
                     } catch (Exception e) {
+                        e.printStackTrace();
                         TaskResponse taskResponse = new TaskResponse();
                         taskResponse.setQueue(queue);
                         taskResponse.setTask(finalTask);

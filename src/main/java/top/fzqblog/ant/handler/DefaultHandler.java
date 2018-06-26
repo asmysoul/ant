@@ -23,6 +23,7 @@ public class DefaultHandler implements IHandler {
                 taskErrorResponse.getQueue().failed(taskErrorResponse.getTask());
             }
         }catch (Exception e){
+            e.printStackTrace();
             logger.error("DefaultHandler-----handle-----error", e);
         }
 

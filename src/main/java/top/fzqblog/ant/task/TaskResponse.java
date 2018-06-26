@@ -1,12 +1,17 @@
 package top.fzqblog.ant.task;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import top.fzqblog.ant.queue.AntQueue;
 import top.fzqblog.ant.queue.TaskQueue;
 import top.fzqblog.ant.utils.StringUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 public class TaskResponse {
 
@@ -14,9 +19,9 @@ public class TaskResponse {
 
     private Task task;
 
-    private InputStream inputStream;
+    private byte[] contentBytes;
 
-    private String content;
+    private ResponseContent responseContent;
 
     private AntQueue queue;
 
@@ -26,23 +31,10 @@ public class TaskResponse {
 
     }
 
-    public TaskResponse(Task task) {
+    public TaskResponse(Task task, byte[] contentBytes) {
         this.task = task;
-    }
-
-    public TaskResponse(String content) {
-        this.content = content;
-    }
-
-    public TaskResponse(Task task, String content) {
-        this.task = task;
-        this.content = content;
-    }
-
-    public TaskResponse(Task task, InputStream inputStream, String content) {
-        this.task = task;
-        this.inputStream = inputStream;
-        this.content = content;
+        this.contentBytes = contentBytes;
+        this.responseContent = new ResponseContent(contentBytes);
     }
 
     public boolean isFailed() {
@@ -53,27 +45,29 @@ public class TaskResponse {
         this.failed = failed;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    public byte[] getContentBytes() {
+        return contentBytes;
     }
 
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
+    public void setContentBytes(byte[] contentBytes) {
+        this.contentBytes = contentBytes;
     }
 
-    public String getContent() {
-        return content;
+    public String getContent() throws UnsupportedEncodingException {
+        return responseContent.string();
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public JSONObject getJsonObject() throws UnsupportedEncodingException {
+        return responseContent.toJsonObject();
     }
 
-    public Document getDoc(){
-        if(StringUtil.isNotEmpty(this.content)){
-            return Jsoup.parse(this.content);
-        }
-        return null;
+    public JSONArray getJsonArray() throws UnsupportedEncodingException {
+        return responseContent.toJsonArray();
+    }
+
+
+    public Document getDoc() throws IOException {
+        return responseContent.toDocument();
     }
 
     public AntQueue getQueue() {

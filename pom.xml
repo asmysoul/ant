@@ -119,6 +119,7 @@
         <jsoup.version>1.10.2</jsoup.version>
         <httpcore.version>4.4.4</httpcore.version>
         <fastjson.version>1.2.47</fastjson.version>
+        <commons-io.version>2.4</commons-io.version>
         <ant.version>1.0.3</ant.version>
     </properties>
 
@@ -189,6 +190,11 @@
             <version>${fastjson.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
 
     </dependencies>
 

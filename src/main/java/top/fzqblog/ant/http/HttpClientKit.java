@@ -15,6 +15,7 @@ import top.fzqblog.ant.task.Task;
 import top.fzqblog.ant.task.TaskResponse;
 
 
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -64,19 +65,23 @@ public class HttpClientKit implements IHttpKit{
 
     @Override
     public TaskResponse doGet(Task task) throws Exception{
-        CloseableHttpClient httpClient = getHttpClient(task);
-        HttpRequest httpGet = new HttpGet(task.getUrl());
-        if(task.getHeaders()!=null&&!task.getHeaders().isEmpty()){
-            System.out.println("headers----------=" + task.getHeaders());
-            httpGet = setHeaders(task.getHeaders(), httpGet);
+            CloseableHttpClient httpClient = getHttpClient(task);
+            HttpRequest httpGet = new HttpGet(task.getUrl());
+            if(task.getHeaders()!=null&&!task.getHeaders().isEmpty()){
+                System.out.println("headers----------=" + task.getHeaders());
+                httpGet = setHeaders(task.getHeaders(), httpGet);
+            }
+            CloseableHttpResponse response = null;
+            try {
+            response = httpClient.execute((HttpGet)httpGet);
+            HttpEntity entity = response.getEntity();
+            byte bytes[] = EntityUtils.toByteArray(entity);
+            return new TaskResponse(task, bytes);
+        }finally {
+             if(response != null){
+                 response.close();
+             }
         }
-        CloseableHttpResponse response = null;
-        response = httpClient.execute((HttpGet)httpGet);
-
-        HttpEntity entity = response.getEntity();
-        String content = EntityUtils.toString(entity, "utf-8");
-        response.close();
-        return new TaskResponse(task, entity.getContent(), content);
     }
 
     @Override
@@ -91,15 +96,15 @@ public class HttpClientKit implements IHttpKit{
         httpPost.setEntity(new StringEntity(JSONObject.toJSONString(task.getParams()), ContentType.create("application/json", "UTF-8")));
         response=httpClient.execute(httpPost);
         HttpEntity entity = response.getEntity();
-        String content = EntityUtils.toString(entity, "utf-8");
+        byte[] bytes = EntityUtils.toByteArray(entity);
         response.close();
-        return new TaskResponse(task, content);
+        return new TaskResponse(task, bytes);
     }
 
     @Override
     public void setPoolSize(int size) {
         httpClientGenerator.setPoolSize(size);
     }
-
+    
 
 }

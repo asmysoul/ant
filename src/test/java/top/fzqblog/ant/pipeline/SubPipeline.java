@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import top.fzqblog.ant.task.Task;
 import top.fzqblog.ant.task.TaskResponse;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 
@@ -19,7 +20,7 @@ public class SubPipeline implements IPipeline {
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public void stream(TaskResponse taskResponse) throws InterruptedException {
+    public void stream(TaskResponse taskResponse) throws InterruptedException, IOException {
         Document document = taskResponse.getDoc();
         logger.info("taskResponse----------=" + document.title());
         Elements elements = document.select("a.cp-feedback");
