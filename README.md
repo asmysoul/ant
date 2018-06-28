@@ -1,5 +1,6 @@
 ## Ant
 
+[github地址](https://github.com/asmysoul/ant)
 
 ![](https://api.travis-ci.org/asmysoul/ant.svg?branch=master) ![](https://img.shields.io/badge/language-java-green.svg) ![](https://img.shields.io/badge/jdk-1.8-green.svg)
 
@@ -81,6 +82,30 @@
     ```
 *   使用自定义的pipeline
     ```java
+    1.直接用匿名内部类
+    public class fzqblogSample{
+        public static void main(String[] args){
+            try {
+                AntQueue antQueue = TaskQueue.of();//初始化默认一个任务队列
+                antQueue.push(new Task("https://www.fzqblog.top/"));//往队列列表里放一个任务
+                Ant ant = Ant
+                        .create()//创建一个ant,
+                        .startQueue(antQueue)//并将任务给它,
+                        .pipeline(new IPipeline() {
+                            public void stream(TaskResponse taskResponse) throws InterruptedException {
+                                System.out.println("博客内容----------=" + taskResponse.getContent());
+                            }
+                        })
+                        .thread(1);// 使用单线程爬取
+                ant.run();//发车 滴滴滴
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    ```
+    ```java
+    2.实现IPipeline接口
     public class SubPipeline implements IPipeline {//实现IPipeline接口
 
         private transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -144,13 +169,13 @@
         public void handle(TaskErrorResponse taskErrorResponse) {
             if(taskErrorResponse.getE() != null
             && taskErrorResponse.getE() instanceof Exception){
-            //根据一些判断条件来检测任务并不是真的失败,可能由于网站的反扒机智,出现的, 此时可以自定义重试策略
+            //根据一些判断条件来检测任务并不是真的失败,可能由于网站的反扒机制,出现的, 此时可以自定义重试策略
                 try {
                     System.out.println("----------=" + taskErrorResponse.getTask());
                     taskErrorResponse
                         .getQueue()
                         .fakerFailed(taskErrorResponse.getTask());
-                        //fakerFailed假失败, 重置重试次数，并且重现放回任务队列
+                        //fakerFailed假失败, 重置重试次数，并且重新放回任务队列
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
