@@ -26,7 +26,7 @@ public class SubPipeline implements IPipeline {
         Elements elements = document.select("a.cp-feedback");
         System.out.println("elements----------=" + elements);
         for (Element element : elements) {
-            Task task = new Task(element.attr("href"));
+            Task task = Task.create(element.attr("href"));
             try {
                 taskResponse.getQueue().push(task);
             } catch (Exception e) {

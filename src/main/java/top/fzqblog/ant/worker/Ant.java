@@ -10,6 +10,7 @@ import top.fzqblog.ant.http.IHttpKit;
 import top.fzqblog.ant.listener.AntListener;
 import top.fzqblog.ant.pipeline.ConsolePipeline;
 import top.fzqblog.ant.pipeline.IPipeline;
+import top.fzqblog.ant.proxy.ProxyProvider;
 import top.fzqblog.ant.queue.AntQueue;
 import top.fzqblog.ant.task.Task;
 import top.fzqblog.ant.task.TaskErrorResponse;
@@ -41,7 +42,6 @@ public class Ant implements Runnable {
 
 
 
-
     private ExecutorService executorService;
 
     private AntQueue queue;
@@ -58,80 +58,92 @@ public class Ant implements Runnable {
 
     private Long sleep = Constants.DEFAULT_SLEEP_TIME;
 
+    private ProxyProvider proxyProvider;
+
     private Ant() {
 
     }
 
-    public static Ant create(){
+    public static Ant create() {
         return new Ant();
     }
 
-    public Ant startQueue(AntQueue antQueue){
+    public Ant startQueue(AntQueue antQueue) {
         this.queue = antQueue;
         return this;
     }
 
-    public Ant thread(int threadNum) throws AntException{
-        if(threadNum <= 0){
+    public Ant thread(int threadNum) throws AntException {
+        if (threadNum <= 0) {
             throw new AntException("线程数小于等于0，这也太秀了吧");
         }
         this.threadNum = threadNum;
         return this;
     }
 
-    public Ant pipeline(IPipeline pipeline){
+    public Ant pipeline(IPipeline pipeline) {
         this.pipeline = pipeline;
         return this;
     }
 
-    public Ant withHandler(IHandler handler){
+    public Ant withHandler(IHandler handler) {
         this.handler = handler;
         return this;
     }
 
-    public Ant httpKit(IHttpKit httpKit){
+    public Ant httpKit(IHttpKit httpKit) {
         this.httpKit = httpKit;
         return this;
     }
 
-    public Ant autoClose(boolean autoClose){
+    public Ant autoClose(boolean autoClose) {
         this.autoClose = autoClose;
         return this;
     }
 
-    public Ant sleep(Long sleep){
+    public Ant sleep(Long sleep) {
         this.sleep = sleep;
         return this;
     }
 
-    private void init(){
-        if(pipeline == null){
+    public Ant proxy(ProxyProvider proxyProvider){
+        this.proxyProvider = proxyProvider;
+        return this;
+    }
+
+    private void init() {
+        if (pipeline == null) {
             pipeline = new ConsolePipeline();
         }
-        if(handler == null){
+        if (handler == null) {
             handler = new DefaultHandler();
         }
 
-        if(httpKit == null){
+        if (httpKit == null) {
             httpKit = new HttpClientKit();
         }
 
-        if(threadPool == null){
+        if (threadPool == null) {
             threadPool = new CountableThreadPool(this.threadNum);
             httpKit.setPoolSize(this.threadNum);
         }
+
+        if(this.proxyProvider != null){
+            httpKit.setProxyProvider(this.proxyProvider);
+        }
+
         startTime = new Date();
-        logger.info("------------------------------ant启动------------------------------于"+ DateUtils.format(startTime, DateUtils.FORMAT_FULL_CN));
+        logger.info("------------------------------ant启动------------------------------于" + DateUtils.format(startTime, DateUtils.FORMAT_FULL_CN));
     }
 
-    public Date getStartTime(){
+    public Date getStartTime() {
         return startTime;
     }
 
 
     private void sleep() {
         try {
-            TimeUnit.MILLISECONDS.sleep(Constants.DEFAULT_SLEEP_TIME);
+            TimeUnit.MILLISECONDS.sleep(sleep);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -142,7 +154,7 @@ public class Ant implements Runnable {
     }
 
     private void process(Task task) throws Exception {
-        TaskResponse taskResponse = httpKit.doGet(task);
+        TaskResponse taskResponse = httpKit.gain(task);
         taskResponse.setQueue(queue);
         taskResponse.setTask(task);
         task.setTaskResponse(taskResponse);
@@ -150,7 +162,7 @@ public class Ant implements Runnable {
 
     private void onSuccess(Task task) throws Exception {
         this.pipeline.stream(task.getTaskResponse());
-        if(this.antListener != null){
+        if (this.antListener != null) {
             this.antListener.onSuccess();
         }
     }
@@ -159,7 +171,7 @@ public class Ant implements Runnable {
         this.handler.handle(new TaskErrorResponse(task.getTaskResponse(), exception));
     }
 
-    public int getThreadAlive(){
+    public int getThreadAlive() {
         return threadPool.getThreadAlive();
     }
 
@@ -181,12 +193,12 @@ public class Ant implements Runnable {
 
             Task finalTask = task;
             if (finalTask == null) {
-                if(threadPool.getThreadAlive() == 0){
+                if (threadPool.getThreadAlive() == 0) {
                     logger.info("★★★★★★★★★★★★★★★★★★★线程池中没有执行的任务★★★★★★★★★★★★★★★★★★★");
                     logger.info("★★★★★★★★★★★★★★★★★★★我要下车了---^_^告辞★★★★★★★★★★★★★★★★★★★");
                     Date endTime = new Date();
-                    logger.info("------------------------------ant执行结束------------------------------于"+DateUtils.format(endTime, DateUtils.FORMAT_FULL_CN));
-                    logger.info("------------------------------总共耗时------------------------------"+ DateUtils.getDatePoor(startTime, endTime));
+                    logger.info("------------------------------ant执行结束------------------------------于" + DateUtils.format(endTime, DateUtils.FORMAT_FULL_CN));
+                    logger.info("------------------------------总共耗时------------------------------" + DateUtils.getDatePoor(startTime, endTime));
                     break;
                 }
                 waitNewUrl();
@@ -196,15 +208,12 @@ public class Ant implements Runnable {
                         process(finalTask);
                         onSuccess(finalTask);
                     } catch (Exception e) {
-                        e.printStackTrace();
                         TaskResponse taskResponse = new TaskResponse();
                         taskResponse.setQueue(queue);
                         taskResponse.setTask(finalTask);
                         finalTask.setTaskResponse(taskResponse);
                         onFailed(finalTask, e);
-
-//                        e.printStackTrace();
-                    }finally {
+                    } finally {
                         signalNewUrl();
                     }
                 });
@@ -212,13 +221,13 @@ public class Ant implements Runnable {
             }
         }
 
-        if(autoClose){
+        if (autoClose) {
             destroy();
         }
 
     }
 
-    private void destroy(){
+    private void destroy() {
         threadPool.shutdown();
     }
 

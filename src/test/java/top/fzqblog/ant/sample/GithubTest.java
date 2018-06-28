@@ -3,6 +3,8 @@ package top.fzqblog.ant.sample;
 import top.fzqblog.ant.handler.ErrorHandler;
 import top.fzqblog.ant.monitor.AntMonitor;
 import top.fzqblog.ant.pipeline.SubPipeline;
+import top.fzqblog.ant.proxy.Proxy;
+import top.fzqblog.ant.proxy.ProxyProvider;
 import top.fzqblog.ant.queue.AntQueue;
 import top.fzqblog.ant.queue.TaskQueue;
 import top.fzqblog.ant.task.Task;
@@ -14,16 +16,25 @@ import top.fzqblog.ant.worker.Ant;
 public class GithubTest {
 
     public static void main(String[] args) throws Exception {
+        String proxyHost = "http-pro.abuyun.com";
+        Integer proxyPort = 9010;
+
+        String proxyUser = "";
+        String proxyPass = "";
         AntQueue antQueue = TaskQueue.of();
-        antQueue.push(new Task("https://github.com/"));
-        antQueue.push(new Task("https://github.com/"));
-        antQueue.push(new Task("https://github.com/"));
-        antQueue.push(new Task("https://github.com/"));
-        antQueue.push(new Task("https://github.com/"));
-        antQueue.push(new Task("https://github.com/"));
-        antQueue.push(new Task("https://github.com/"));
-        antQueue.push(new Task("https://github.com/"));
-        Ant ant = Ant.create().startQueue(antQueue).pipeline(new SubPipeline()).thread(1);
+        antQueue.push(Task.create("https://xm.anjuke.com/"));
+        ProxyProvider proxyProvider = new ProxyProvider() {
+            @Override
+            public void returnProxy(Proxy proxy, Task task) {
+
+            }
+
+            @Override
+            public Proxy getProxy(Task task) {
+                return new Proxy(proxyHost, proxyPort, proxyUser, proxyPass);
+            }
+        };
+        Ant ant = Ant.create().startQueue(antQueue).pipeline(new SubPipeline()).proxy(proxyProvider).thread(1);
         AntMonitor.getInstance().regist(ant);
         ant.run();
     }

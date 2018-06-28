@@ -110,7 +110,6 @@ public class HttpClientGenerator {
         SocketConfig socketConfig = socketConfigBuilder.build();
         httpClientBuilder.setDefaultSocketConfig(socketConfig);
         connectionManager.setDefaultSocketConfig(socketConfig);
-        httpClientBuilder.setDefaultRequestConfig(reqConfig);
         return httpClientBuilder.build();
     }
 

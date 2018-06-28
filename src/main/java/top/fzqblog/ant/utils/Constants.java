@@ -25,4 +25,8 @@ public class Constants {
     public static final  Long DEFAULT_SLEEP_TIME = 0L;
 
     public static final Integer DEFAULT_THREAD_NUM = 1;
+
+    public static final String HTTP_GET = "get";
+
+    public static final String HTTP_POST = "post";
 }

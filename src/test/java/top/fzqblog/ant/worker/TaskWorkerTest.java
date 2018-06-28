@@ -7,6 +7,7 @@ import top.fzqblog.ant.pipeline.SubPipeline;
 import top.fzqblog.ant.queue.AntQueue;
 import top.fzqblog.ant.queue.TaskQueue;
 import top.fzqblog.ant.task.Task;
+import top.fzqblog.ant.utils.Constants;
 
 /**
  * Created by 抽离 on 2018/6/11.
@@ -17,7 +18,8 @@ public class TaskWorkerTest {
     public void testRun(){
         try {
             AntQueue antQueue = TaskQueue.of();
-            antQueue.push(new Task("https://github.com/"));
+            Task task = Task.create("https://www.baidu.com/");
+            antQueue.push(task);
             Ant ant = Ant
                     .create()
                     .startQueue(antQueue)

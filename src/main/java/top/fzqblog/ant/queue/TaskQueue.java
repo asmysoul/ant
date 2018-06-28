@@ -93,7 +93,7 @@ public class TaskQueue implements AntQueue{
 
 
     public void push(List<String> urls) {
-        urls.stream().map(url -> new Task(url)).forEach(task -> {
+        urls.stream().map(Task::create).forEach(task -> {
             try {
                 this.push(task);
             } catch (InterruptedException e) {

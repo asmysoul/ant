@@ -14,9 +14,9 @@ public class HttpKitTest {
     public void test(){
         IHttpKit httpKit = new HttpClientKit();
         String url = "https://www.baidu.com";
-        Task task = new Task(url);
+        Task task = Task.create(url);
         try {
-            TaskResponse taskResponse = httpKit.doGet(task);
+            TaskResponse taskResponse = httpKit.gain(task);
             System.out.println("----------=" + taskResponse);
         } catch (Exception e) {
             e.printStackTrace();

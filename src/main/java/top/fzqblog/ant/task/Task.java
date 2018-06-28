@@ -14,49 +14,39 @@ public class Task implements Comparable<Task> {
     //每一个任务都会有一个分组，如果没有设置，默认为 default
     private String group = Constants.APP_TASK_GROUP_DEFAULT;
     private String url;
+    private String method = Constants.HTTP_GET;
     private Map<String, Object> headers = new HashMap<>();
     private Map<String, Object> params = new HashMap<String, Object>();;
     private TaskResponse taskResponse;
-    private List<String> selects;
     private Object extr;
     private Integer retry = Constants.DEFAULT_TASK_RETRY;
     private Integer deep = Constants.DEFAULT_TASK_DEEP;
+    private Integer timeOut = Constants.DEFAULT_CONNECTION_TIMEOUT;
     private String userAgent;
 
-    public Task(String url, String group, Object extr) {
-        this.url = url;
-        this.group = group;
-        this.extr = extr;
-    }
+    private Task() {
 
-    public Task(String url, Map<String, Object> params) {
-        this.url = url;
-        this.params = params;
     }
 
     public Task(String url) {
         this.url = url;
     }
 
-    public Task(String url, String group) {
-        this.url = url;
-        this.group = group;
-    }
 
-    public Task(String url, String group, Map<String, Object> params) {
+
+    public Task(String group, String url, String method, Map<String, Object> headers, Map<String, Object> params) {
         this.group = group;
         this.url = url;
-        this.params = params;
-    }
-
-    public Task(String url, Map<String, Object> headers, Map<String, Object> params) {
-        this.url = url;
+        this.method = method;
         this.headers = headers;
         this.params = params;
     }
 
-    public Task() {
+    public static Task create(String url){
+        Task task = new Task(url);
+        return task;
     }
+
 
     public String getGroup() {
         return group;
@@ -72,6 +62,14 @@ public class Task implements Comparable<Task> {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMehod(String method) {
+        this.method = method;
     }
 
     public String getUrl() {
@@ -98,22 +96,20 @@ public class Task implements Comparable<Task> {
         this.params = params;
     }
 
-    public List<String> getSelects() {
-        return selects;
-    }
-
-    public Task addSelect(String cssSelect) {
-        this.selects = Optional.ofNullable(this.selects).orElse(new ArrayList<String>());
-        this.selects.add(cssSelect);
-        return this;
-    }
-
     public Object getExtr() {
         return extr;
     }
 
     public void setExtr(Object extr) {
         this.extr = extr;
+    }
+
+    public Integer getTimeOut() {
+        return timeOut;
+    }
+
+    public void setTimeOut(Integer timeOut) {
+        this.timeOut = timeOut;
     }
 
     public String getUserAgent() {
@@ -137,14 +133,14 @@ public class Task implements Comparable<Task> {
         return "Task{" +
                 "id='" + id + '\'' +
                 ", group='" + group + '\'' +
+                ", method='" + method + '\'' +
                 ", url='" + url + '\'' +
                 ", headers=" + headers +
                 ", params=" + params +
-                ", selects=" + selects +
                 ", extr=" + extr +
                 ", retry=" + retry +
                 ", deep=" + deep +
-                ", userAgent='" + userAgent + '\'' +
+                ", userAgent=" + userAgent +
                 '}';
     }
 
@@ -159,7 +155,6 @@ public class Task implements Comparable<Task> {
         if (getGroup() != null ? !getGroup().equals(task.getGroup()) : task.getGroup() != null) return false;
         if (getUrl() != null ? !getUrl().equals(task.getUrl()) : task.getUrl() != null) return false;
         if (getParams() != null ? !getParams().equals(task.getParams()) : task.getParams() != null) return false;
-        if (getSelects() != null ? !getSelects().equals(task.getSelects()) : task.getSelects() != null) return false;
         if (getExtr() != null ? !getExtr().equals(task.getExtr()) : task.getExtr() != null) return false;
         return getRetry() != null ? getRetry().equals(task.getRetry()) : task.getRetry() == null;
     }
@@ -170,7 +165,6 @@ public class Task implements Comparable<Task> {
         result = 31 * result + (getGroup() != null ? getGroup().hashCode() : 0);
         result = 31 * result + (getUrl() != null ? getUrl().hashCode() : 0);
         result = 31 * result + (getParams() != null ? getParams().hashCode() : 0);
-        result = 31 * result + (getSelects() != null ? getSelects().hashCode() : 0);
         result = 31 * result + (getExtr() != null ? getExtr().hashCode() : 0);
         result = 31 * result + (getRetry() != null ? getRetry().hashCode() : 0);
         return result;
@@ -211,10 +205,6 @@ public class Task implements Comparable<Task> {
     @Override
     public int compareTo(Task task) {
         return task.getDeep() - this.getDeep();
-    }
-
-    public void setSelects(List<String> selects) {
-        this.selects = selects;
     }
 
     public void setRetry(Integer retry) {

@@ -23,7 +23,8 @@ public class CoolApkTest {
         headers.put("X-App-Id", "coolmarket");
         headers.put("X-App-Token", "7d7eaa502405b59203e62a484caca6d3c3d3a50c-e03a-497c-957b-e814c89442920x5b1e2eee");
         String targetUrl = "https://api.coolapk.com/v6/topic/tagFeedList?tag=二手交易&page=1&listType=lastupdate_desc&blockStatus=0";
-        Task task = new Task(targetUrl, headers, null);
+        Task task = Task.create(targetUrl);
+        task.setHeaders(headers);
         AntQueue antQueue = TaskQueue.of();
         try {
             antQueue.push(task);
