@@ -22,7 +22,7 @@ public class SubPipeline implements IPipeline {
     @Override
     public void stream(TaskResponse taskResponse) throws InterruptedException, IOException {
         Document document = taskResponse.getDoc();
-        logger.info("taskResponse----------=" + document.title());
+        logger.info("taskResponse----------=" + document);
         Elements elements = document.select("a.cp-feedback");
         System.out.println("elements----------=" + elements);
         for (Element element : elements) {
@@ -34,4 +34,6 @@ public class SubPipeline implements IPipeline {
             }
         }
     }
+
+
 }

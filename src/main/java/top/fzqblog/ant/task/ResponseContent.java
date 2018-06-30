@@ -64,4 +64,17 @@ public class ResponseContent {
     public JSONArray toJsonArray() throws UnsupportedEncodingException {
         return JSONArray.parseArray(this.string());
     }
+
+    @Override
+    public String toString() {
+        try {
+            return "ResponseContent{" +
+                    "content='" + string() + '\'' +
+                    '}';
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

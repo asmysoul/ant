@@ -1,12 +1,17 @@
 package top.fzqblog.ant.http;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import top.fzqblog.ant.proxy.Proxy;
 import top.fzqblog.ant.proxy.ProxyProvider;
 import top.fzqblog.ant.task.Task;
 import top.fzqblog.ant.task.TaskResponse;
+
+import java.util.List;
 
 /**
  * Created by 抽离 on 2018/6/8.
@@ -19,6 +24,8 @@ public class HttpClientKit implements IHttpKit{
 
     private HttpUriRequestConverter httpUriRequestConverter = new HttpUriRequestConverter();
 
+    private CookieStore cookieStore = new BasicCookieStore();
+
     private ProxyProvider proxyProvider;
 
     @Override
@@ -28,12 +35,12 @@ public class HttpClientKit implements IHttpKit{
 
     private CloseableHttpClient getHttpClient(Task task) {
         if(task==null){
-            return httpClientGenerator.getClient(null);
+            return httpClientGenerator.getClient(null, cookieStore);
         }
         if (httpClient == null) {
             synchronized (this) {
                 if (httpClient == null) {
-                    httpClient = httpClientGenerator.getClient(task);
+                    httpClient = httpClientGenerator.getClient(task, cookieStore);
                 }
             }
         }
@@ -51,7 +58,7 @@ public class HttpClientKit implements IHttpKit{
             response = httpClient.execute(requestContext.getHttpUriRequest(), requestContext.getHttpClientContext());
             HttpEntity entity = response.getEntity();
             byte bytes[] = EntityUtils.toByteArray(entity);
-            return new TaskResponse(task, bytes);
+            return new TaskResponse(task, bytes, response.getStatusLine().getStatusCode(), cookieStore.getCookies());
         }finally {
             if(response != null){
                 response.close();

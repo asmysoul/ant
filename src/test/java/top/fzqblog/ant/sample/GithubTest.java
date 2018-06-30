@@ -1,6 +1,5 @@
 package top.fzqblog.ant.sample;
 
-import top.fzqblog.ant.handler.ErrorHandler;
 import top.fzqblog.ant.monitor.AntMonitor;
 import top.fzqblog.ant.pipeline.SubPipeline;
 import top.fzqblog.ant.proxy.Proxy;
@@ -34,7 +33,7 @@ public class GithubTest {
                 return new Proxy(proxyHost, proxyPort, proxyUser, proxyPass);
             }
         };
-        Ant ant = Ant.create().startQueue(antQueue).pipeline(new SubPipeline()).proxy(proxyProvider).thread(1);
+        Ant ant = Ant.create().startQueue(antQueue).proxy(proxyProvider).thread(1);
         AntMonitor.getInstance().regist(ant);
         ant.run();
     }

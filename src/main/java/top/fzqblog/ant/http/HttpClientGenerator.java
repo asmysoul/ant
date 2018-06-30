@@ -1,5 +1,6 @@
 package top.fzqblog.ant.http;
 
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -88,11 +89,11 @@ public class HttpClientGenerator {
         return this;
     }
 
-    public CloseableHttpClient getClient(Task task) {
-        return generateClient(task);
+    public CloseableHttpClient getClient(Task task, CookieStore cookieStore) {
+        return generateClient(task, cookieStore);
     }
 
-    private CloseableHttpClient generateClient(Task task) {
+    private CloseableHttpClient generateClient(Task task, CookieStore cookieStore) {
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
         
         httpClientBuilder.setConnectionManager(connectionManager);
@@ -103,12 +104,12 @@ public class HttpClientGenerator {
         }
         //解决post/redirect/post 302跳转问题
         httpClientBuilder.setRedirectStrategy(new CustomRedirectStrategy());
-
         SocketConfig.Builder socketConfigBuilder = SocketConfig.custom();
         socketConfigBuilder.setSoKeepAlive(true).setTcpNoDelay(true);
         socketConfigBuilder.setSoTimeout(Constants.DEFAULT_SOCKET_TIMEOUT);
         SocketConfig socketConfig = socketConfigBuilder.build();
         httpClientBuilder.setDefaultSocketConfig(socketConfig);
+        httpClientBuilder.setDefaultCookieStore(cookieStore);
         connectionManager.setDefaultSocketConfig(socketConfig);
         return httpClientBuilder.build();
     }

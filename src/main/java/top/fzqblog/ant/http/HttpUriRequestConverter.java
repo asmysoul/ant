@@ -1,23 +1,30 @@
 package top.fzqblog.ant.http;
 
-import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpHost;
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.ChallengeState;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
 import top.fzqblog.ant.proxy.Proxy;
 import top.fzqblog.ant.task.Task;
 import top.fzqblog.ant.utils.Constants;
 
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -36,6 +43,15 @@ public class HttpUriRequestConverter {
             AuthState authState = new AuthState();
             authState.update(new BasicScheme(ChallengeState.PROXY), new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword()));
             httpContext.setAttribute(HttpClientContext.PROXY_AUTH_STATE, authState);
+        }
+
+        if (task.getCookies() != null && !task.getCookies().isEmpty()) {
+            CookieStore cookieStore = new BasicCookieStore();
+            for (Map.Entry<String, String> cookieEntry : task.getCookies().entrySet()) {
+                BasicClientCookie cookie = new BasicClientCookie(cookieEntry.getKey(), cookieEntry.getValue());
+                cookieStore.addCookie(cookie);
+            }
+            httpContext.setCookieStore(cookieStore);
         }
         return httpContext;
     }
@@ -82,10 +98,14 @@ public class HttpUriRequestConverter {
     }
 
     private RequestBuilder addFormParams(RequestBuilder requestBuilder, Task task) {
-        if (task.getParams() != null) {
-            requestBuilder.setEntity(new StringEntity(JSONObject.toJSONString(task.getParams()), ContentType.create("application/json", "UTF-8")));
+        if (task.getRequestBody() != null) {
+            ByteArrayEntity entity = new ByteArrayEntity(task.getRequestBody().getBody());
+            entity.setContentType(task.getRequestBody().getContentType());
+            requestBuilder.setEntity(entity);
         }
         return requestBuilder;
     }
+
+
 
 }

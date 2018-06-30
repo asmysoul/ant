@@ -11,7 +11,7 @@ public class IPZ1024Pipline implements IPipeline {
 
     @Override
     public void stream(TaskResponse taskResponse) throws InterruptedException, UnsupportedEncodingException {
-        System.out.println("content----------=" + taskResponse.getContent());
+        System.out.println("content----------=" + taskResponse);
     }
 
 }

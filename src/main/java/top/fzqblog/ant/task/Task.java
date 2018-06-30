@@ -2,6 +2,7 @@ package top.fzqblog.ant.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.fzqblog.ant.model.HttpRequestBody;
 import top.fzqblog.ant.utils.Constants;
 import top.fzqblog.ant.utils.NameUtils;
 
@@ -16,13 +17,15 @@ public class Task implements Comparable<Task> {
     private String url;
     private String method = Constants.HTTP_GET;
     private Map<String, Object> headers = new HashMap<>();
-    private Map<String, Object> params = new HashMap<String, Object>();;
+    private Map<String, Object> params = new HashMap<String, Object>();
+    private Map<String, String> cookies = new HashMap<>();
     private TaskResponse taskResponse;
     private Object extr;
     private Integer retry = Constants.DEFAULT_TASK_RETRY;
     private Integer deep = Constants.DEFAULT_TASK_DEEP;
     private Integer timeOut = Constants.DEFAULT_CONNECTION_TIMEOUT;
     private String userAgent;
+    private HttpRequestBody requestBody;
 
     private Task() {
 
@@ -33,7 +36,6 @@ public class Task implements Comparable<Task> {
     }
 
 
-
     public Task(String group, String url, String method, Map<String, Object> headers, Map<String, Object> params) {
         this.group = group;
         this.url = url;
@@ -42,7 +44,7 @@ public class Task implements Comparable<Task> {
         this.params = params;
     }
 
-    public static Task create(String url){
+    public static Task create(String url) {
         Task task = new Task(url);
         return task;
     }
@@ -96,6 +98,14 @@ public class Task implements Comparable<Task> {
         this.params = params;
     }
 
+    public Map<String, String> getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(Map<String, String> cookies) {
+        this.cookies = cookies;
+    }
+
     public Object getExtr() {
         return extr;
     }
@@ -118,6 +128,14 @@ public class Task implements Comparable<Task> {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+    }
+
+    public HttpRequestBody getRequestBody() {
+        return requestBody;
+    }
+
+    public void setRequestBody(HttpRequestBody requestBody) {
+        this.requestBody = requestBody;
     }
 
     public TaskResponse getTaskResponse() {
@@ -214,7 +232,6 @@ public class Task implements Comparable<Task> {
     public void setDeep(Integer deep) {
         this.deep = deep;
     }
-
 
 
 }

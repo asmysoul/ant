@@ -29,4 +29,6 @@ public class Constants {
     public static final String HTTP_GET = "get";
 
     public static final String HTTP_POST = "post";
+
+    public static final String DEFAULT_ENCODING = "UTF-8";
 }
