@@ -40,8 +40,10 @@ public class LockTest {
         System.out.println("休息结束");
         String num = "1";
         queue.add(num);
-        System.out.println("往队列添加了一个数字----"+num );
+        System.out.println("往队列添加了一个数字----"+num);
+        System.out.println("休息10秒钟");
         TimeUnit.SECONDS.sleep(10);
+        System.out.println("休息结束");
         System.out.println("----------=doSomething" );
 
     }

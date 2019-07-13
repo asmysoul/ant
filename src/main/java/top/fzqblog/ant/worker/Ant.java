@@ -187,8 +187,8 @@ public class Ant implements Runnable {
                 } else {
                     task = this.queue.take();
                 }
-            } catch (Exception ignored) {
-
+            } catch (Exception e) {
+				logger.error("获取任务出错， {}", e);
             }
 
             Task finalTask = task;
@@ -200,6 +200,8 @@ public class Ant implements Runnable {
                     logger.info("------------------------------ant执行结束------------------------------于" + DateUtils.format(endTime, DateUtils.FORMAT_FULL_CN));
                     logger.info("------------------------------总共耗时------------------------------" + DateUtils.getDatePoor(startTime, endTime));
                     break;
+                } else {
+                    logger.info("当前还有{}个线程活着", threadPool.getThreadAlive());
                 }
                 waitNewUrl();
             } else {
