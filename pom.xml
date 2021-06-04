@@ -115,7 +115,7 @@
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
         <junit.version>4.12</junit.version>
-        <httpClient.version>4.5.2</httpClient.version>
+        <httpClient.version>4.5.13</httpClient.version>
         <jsoup.version>1.10.2</jsoup.version>
         <httpcore.version>4.4.4</httpcore.version>
         <fastjson.version>1.2.47</fastjson.version>
